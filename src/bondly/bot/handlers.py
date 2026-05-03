@@ -38,6 +38,7 @@ def create_router(
         with session_factory() as session:
             memory = MemoryService(session)
             memory.log_message(user_id=user_id, chat_id=chat_id, direction="in", text=text)
+            session.commit()
 
             if text.casefold() in {"да", "готово", "выполнил", "сделал"}:
                 if memory.mark_latest_sent_promise_done(user_id):
