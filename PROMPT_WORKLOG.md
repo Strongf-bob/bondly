@@ -27,3 +27,13 @@
 - Files changed: pyproject.toml, PROMPT_WORKLOG.md.
 - Assumptions made: `APP_TIMEZONE=Europe/Moscow` should remain the default local timezone.
 - Remaining risks or follow-up ideas: Add a startup health check command that validates environment and timezone before polling Telegram.
+
+## 2026-05-03 18:59 (Local Time)
+- Task/request: Check whether the bot wrote anything to the database after user interaction.
+- What was analyzed: SQLite table counts, `message_logs`, runtime logs, and the LLM request failure stack trace.
+- Existing backend patterns reused: Kept LLM failures represented as `LlmError` and kept raw Telegram input logging inside `MemoryService`.
+- What was implemented: Committed inbound message logs before LLM calls and wrapped `httpx.RequestError` as `LlmError` so network failures return a user-facing bot reply instead of bubbling through aiogram.
+- Verification performed: `.venv\Scripts\python.exe -m pytest`, `.venv\Scripts\python.exe -m ruff check .`, and `.venv\Scripts\python.exe -m compileall src` all passed.
+- Files changed: src/bondly/bot/handlers.py, src/bondly/llm/client.py, PROMPT_WORKLOG.md.
+- Assumptions made: Raw inbound messages should be retained for debugging and recovery even when extraction fails.
+- Remaining risks or follow-up ideas: Validate the configured LLM base URL and add a startup/config health check.

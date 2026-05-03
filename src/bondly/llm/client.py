@@ -67,12 +67,16 @@ class LlmClient:
             "response_format": {"type": "json_object"},
         }
         headers = {"Authorization": f"Bearer {self._api_key}"}
-        async with httpx.AsyncClient(timeout=self._timeout_seconds) as client:
-            response = await client.post(
-                f"{self._base_url}/chat/completions",
-                json=body,
-                headers=headers,
-            )
+        try:
+            async with httpx.AsyncClient(timeout=self._timeout_seconds) as client:
+                response = await client.post(
+                    f"{self._base_url}/chat/completions",
+                    json=body,
+                    headers=headers,
+                )
+        except httpx.RequestError as exc:
+            raise LlmError("LLM API request failed before receiving a response.") from exc
+
         if response.status_code >= 400:
             raise LlmError(f"LLM API request failed with status {response.status_code}.")
 
