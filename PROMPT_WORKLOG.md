@@ -57,3 +57,13 @@
 - Files changed: src/bondly/llm/prompts.py, src/bondly/llm/schemas.py, src/bondly/services/memory.py, tests/test_memory_service.py, PROMPT_WORKLOG.md.
 - Assumptions made: For MVP, the model may propose an obvious nominative Russian profile title, but the exact user phrase must remain searchable as an alias.
 - Remaining risks or follow-up ideas: Add an explicit correction flow like “исправь имя Рим Громов на ...” and maybe a confidence/confirmation field for uncertain names.
+
+## 2026-05-03 19:53 (Local Time)
+- Task/request: Fix bug where “с кем я знаком?” was not recognized as a contact list query and a bare name reply created an empty duplicate person.
+- What was analyzed: SQLite counts and recent message logs showing duplicate `рим громов`, aiogram logs, and current intent/extraction prompts.
+- Existing backend patterns reused: Kept routing through `ChatIntent` and memory writes through `MemoryService`.
+- What was implemented: Added `list_people` intent, `MemoryService.list_people`, `MemoryService.has_memory_payload`, and a guard that refuses to save extractions containing only a bare name without facts/promises/dates.
+- Verification performed: `.venv\Scripts\python.exe -m pytest`, `.venv\Scripts\python.exe -m ruff check .`, and `.venv\Scripts\python.exe -m compileall src` all passed; removed the local duplicate `people.id=2`, rebuilt the Markdown mirror, and restarted the bot.
+- Files changed: src/bondly/llm/prompts.py, src/bondly/llm/schemas.py, src/bondly/bot/handlers.py, src/bondly/services/memory.py, tests/test_memory_service.py, PROMPT_WORKLOG.md.
+- Assumptions made: A bare name alone should not create a new person unless accompanied by at least one fact, tag, role/company, promise, or important date.
+- Remaining risks or follow-up ideas: Add conversational state so after “уточните, о ком речь” a bare name is interpreted as the missing query parameter instead of a new record.

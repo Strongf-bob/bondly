@@ -34,5 +34,7 @@ class MessageExtraction(BaseModel):
 
 
 class ChatIntent(BaseModel):
-    kind: str = Field(pattern="^(record|who_is|open_promises|due_followups|unknown)$")
+    kind: str = Field(
+        pattern="^(record|who_is|list_people|open_promises|due_followups|unknown)$"
+    )
     person_name: str | None = Field(default=None, max_length=200)
