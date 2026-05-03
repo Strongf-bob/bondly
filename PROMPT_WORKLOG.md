@@ -37,3 +37,13 @@
 - Files changed: src/bondly/bot/handlers.py, src/bondly/llm/client.py, PROMPT_WORKLOG.md.
 - Assumptions made: Raw inbound messages should be retained for debugging and recovery even when extraction fails.
 - Remaining risks or follow-up ideas: Validate the configured LLM base URL and add a startup/config health check.
+
+## 2026-05-03 19:08 (Local Time)
+- Task/request: Re-check whether NeuralDeep still fails and diagnose the current local startup/config state.
+- What was analyzed: Direct NeuralDeep chat completion request, Telegram API reachability, and settings loading from `.env`.
+- Existing backend patterns reused: Kept central settings validation in `Settings`.
+- What was implemented: Changed `.env` decoding to `utf-8-sig` so Windows PowerShell-created UTF-8 files with BOM do not break `TELEGRAM_BOT_TOKEN` parsing.
+- Verification performed: Direct `LlmClient.classify_intent` returned valid JSON for a Russian question; `.venv\Scripts\python.exe -m pytest`, `.venv\Scripts\python.exe -m ruff check .`, and `.venv\Scripts\python.exe -m compileall src` all passed.
+- Files changed: src/bondly/config.py, PROMPT_WORKLOG.md.
+- Assumptions made: Supporting BOM-tolerant `.env` files is safer on Windows and does not change behavior for normal UTF-8 files.
+- Remaining risks or follow-up ideas: Add a preflight command for env parsing, Telegram connectivity, and LLM JSON response validation.

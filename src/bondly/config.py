@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     )
     daily_digest_time: str = Field(default="09:00", alias="DAILY_DIGEST_TIME")
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8-sig")
 
     @property
     def timezone(self) -> ZoneInfo:
