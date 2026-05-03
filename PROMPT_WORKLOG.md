@@ -17,3 +17,13 @@
 - Files changed: README.md, .env.example, .gitignore, PROMPT_WORKLOG.md, src/bondly/config.py, src/bondly/bot/*, src/bondly/services/memory.py, src/bondly/storage/*, tests/test_memory_service.py.
 - Assumptions made: Markdown is generated from the database and should not be manually edited as the source of truth in MVP 0.1.
 - Remaining risks or follow-up ideas: Add Alembic migrations before production, enrich Markdown history from message logs, add graph exports, and add conflict/update logic for changed facts.
+
+## 2026-05-03 18:50 (Local Time)
+- Task/request: Run the project locally after the user filled `.env`.
+- What was analyzed: Local startup logs from `storage/logs/bondly.err.log` and Windows `zoneinfo` failure.
+- Existing backend patterns reused: Kept timezone configuration in `Settings`; fixed the runtime dependency instead of special-casing Windows timezone behavior.
+- What was implemented: Added `tzdata` as a runtime dependency so `ZoneInfo("Europe/Moscow")` works on Windows.
+- Verification performed: Reinstalled the project in `.venv`, started the bot successfully, confirmed polling for `@bondly_strongf_bot`, and ran `.venv\Scripts\python.exe -m pytest`, `.venv\Scripts\python.exe -m ruff check .`, and `.venv\Scripts\python.exe -m compileall src`.
+- Files changed: pyproject.toml, PROMPT_WORKLOG.md.
+- Assumptions made: `APP_TIMEZONE=Europe/Moscow` should remain the default local timezone.
+- Remaining risks or follow-up ideas: Add a startup health check command that validates environment and timezone before polling Telegram.
