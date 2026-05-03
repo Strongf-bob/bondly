@@ -74,6 +74,28 @@ def test_person_card_and_open_promises_are_scoped_by_user():
         assert service.list_open_promises(user_id=2) == "Открытых обещаний нет."
 
 
+def test_canonical_name_is_primary_and_display_name_is_alias():
+    session_factory = make_session_factory()
+    extraction = MessageExtraction(
+        people=[
+            ExtractedPerson(
+                name="Рим Громов",
+                display_name="Римом Громовым",
+                facts=["Познакомились 1 сентября 2025 года"],
+            )
+        ],
+        reply="Запомнил.",
+    )
+
+    with session_factory() as session:
+        service = MemoryService(session)
+        service.apply_extraction(user_id=1, chat_id=10, extraction=extraction)
+        session.commit()
+
+        assert service.get_person_card(user_id=1, name="Рим Громов") is not None
+        assert service.get_person_card(user_id=1, name="Римом Громовым") is not None
+
+
 def test_mark_latest_sent_promise_done():
     session_factory = make_session_factory()
     due_at = datetime.now(UTC) - timedelta(minutes=1)

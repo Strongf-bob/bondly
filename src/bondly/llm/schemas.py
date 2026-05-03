@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 class ExtractedPerson(BaseModel):
     name: str = Field(min_length=1, max_length=200)
+    display_name: str | None = Field(default=None, max_length=200)
     aliases: list[str] = Field(default_factory=list)
     company: str | None = Field(default=None, max_length=200)
     role_or_context: str | None = Field(default=None, max_length=500)

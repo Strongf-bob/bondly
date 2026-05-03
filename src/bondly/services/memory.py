@@ -36,17 +36,18 @@ class MemoryService:
     ) -> None:
         people_by_name: dict[str, Person] = {}
         for extracted in extraction.people:
+            aliases = [extracted.display_name or extracted.name, *extracted.aliases]
             person = self.upsert_person(
                 user_id=user_id,
                 name=extracted.name,
-                aliases=extracted.aliases,
+                aliases=aliases,
                 company=extracted.company,
                 role_or_context=extracted.role_or_context,
                 facts=extracted.facts,
                 tags=extracted.tags,
             )
             people_by_name[normalize_name(extracted.name)] = person
-            for alias in extracted.aliases:
+            for alias in aliases:
                 people_by_name[normalize_name(alias)] = person
 
         for extracted in extraction.promises:
