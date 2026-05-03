@@ -72,6 +72,20 @@ def test_person_card_and_open_promises_are_scoped_by_user():
         assert service.get_person_card(user_id=2, name="Дима") is None
         assert "отправить ссылку" in service.list_open_promises(user_id=1)
         assert service.list_open_promises(user_id=2) == "Открытых обещаний нет."
+        assert "Дима" in service.list_people(user_id=1)
+        assert service.list_people(user_id=2) == "Пока никого не записал."
+
+
+def test_empty_name_only_extraction_is_not_memory_payload():
+    session_factory = make_session_factory()
+    extraction = MessageExtraction(
+        people=[ExtractedPerson(name="рим громов", display_name="рим громов")],
+        reply="Записал.",
+    )
+
+    with session_factory() as session:
+        service = MemoryService(session)
+        assert service.has_memory_payload(extraction) is False
 
 
 def test_canonical_name_is_primary_and_display_name_is_alias():

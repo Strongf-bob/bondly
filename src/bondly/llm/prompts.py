@@ -68,13 +68,15 @@ Security boundary:
 
 Return only valid JSON:
 {
-  "kind": "record|who_is|open_promises|due_followups|unknown",
+  "kind": "record|who_is|list_people|open_promises|due_followups|unknown",
   "person_name": "string or null"
 }
 
 Meanings:
 - record: user is telling new information about a person, promise, date, or follow-up.
 - who_is: user asks who a person is.
+- list_people: user asks who they know, who is in their contacts, or asks for a list
+  of known people.
 - open_promises: user asks what they promised.
 - due_followups: user asks who they should write to or follow up with.
 - unknown: anything else.

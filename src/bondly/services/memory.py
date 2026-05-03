@@ -96,6 +96,38 @@ class MemoryService:
                     )
                 )
 
+    def has_memory_payload(self, extraction: MessageExtraction) -> bool:
+        return any(
+            [
+                any(
+                    person.company
+                    or person.role_or_context
+                    or person.facts
+                    or person.tags
+                    for person in extraction.people
+                ),
+                extraction.promises,
+                extraction.important_dates,
+            ]
+        )
+
+    def list_people(self, user_id: int) -> str:
+        people = self._session.scalars(
+            select(Person)
+            .where(Person.user_id == user_id)
+            .order_by(Person.name)
+            .limit(50)
+        ).all()
+        if not people:
+            return "Пока никого не записал."
+
+        lines = ["Ты знаком с:"]
+        for index, person in enumerate(people, start=1):
+            details = ", ".join(part for part in [person.company, person.role_or_context] if part)
+            suffix = f" — {details}" if details else ""
+            lines.append(f"{index}. {person.name}{suffix}")
+        return "\n".join(lines)
+
     def upsert_person(
         self,
         user_id: int,

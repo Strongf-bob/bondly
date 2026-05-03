@@ -65,6 +65,8 @@ def create_router(
                 reply = memory.get_person_card(user_id, intent.person_name)
                 if reply is None:
                     reply = f"Пока не знаю, кто такой {intent.person_name}."
+            elif intent.kind == "list_people":
+                reply = memory.list_people(user_id)
             elif intent.kind == "open_promises":
                 reply = memory.list_open_promises(user_id)
             elif intent.kind == "due_followups":
@@ -80,12 +82,15 @@ def create_router(
                     await message.answer("Не смог сохранить запись. Попробуй написать проще.")
                     return
 
-                memory.apply_extraction(user_id=user_id, chat_id=chat_id, extraction=extraction)
-                reply = extraction.reply
+                if not memory.has_memory_payload(extraction):
+                    reply = "Не вижу новых фактов, обещаний или дат для записи."
+                else:
+                    memory.apply_extraction(user_id=user_id, chat_id=chat_id, extraction=extraction)
+                    reply = extraction.reply
 
             memory.log_message(user_id=user_id, chat_id=chat_id, direction="out", text=reply)
             session.commit()
-            if intent.kind not in {"who_is", "open_promises", "due_followups"}:
+            if intent.kind not in {"who_is", "list_people", "open_promises", "due_followups"}:
                 markdown_mirror.sync_user(session, user_id)
 
         await message.answer(reply)
