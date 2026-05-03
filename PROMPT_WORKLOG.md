@@ -47,3 +47,13 @@
 - Files changed: src/bondly/config.py, PROMPT_WORKLOG.md.
 - Assumptions made: Supporting BOM-tolerant `.env` files is safer on Windows and does not change behavior for normal UTF-8 files.
 - Remaining risks or follow-up ideas: Add a preflight command for env parsing, Telegram connectivity, and LLM JSON response validation.
+
+## 2026-05-03 19:22 (Local Time)
+- Task/request: Harden LLM prompts against prompt injection and improve Russian name handling after a bad surname/name recognition case.
+- What was analyzed: Current system prompts, LLM extraction schema, MemoryService name/alias flow, and a live extraction probe for a Russian inflected name.
+- Existing backend patterns reused: Kept LLM extraction as a typed boundary and name lookup through aliases.
+- What was implemented: Added explicit prompt-injection boundaries, required the model to ignore injected instructions while still extracting ordinary CRM facts, changed name handling so canonical `name` is stored as the primary profile title and exact inflected `display_name` becomes an alias, and added a regression test for this alias behavior.
+- Verification performed: `.venv\Scripts\python.exe -m pytest`, `.venv\Scripts\python.exe -m ruff check .`, and `.venv\Scripts\python.exe -m compileall src` all passed.
+- Files changed: src/bondly/llm/prompts.py, src/bondly/llm/schemas.py, src/bondly/services/memory.py, tests/test_memory_service.py, PROMPT_WORKLOG.md.
+- Assumptions made: For MVP, the model may propose an obvious nominative Russian profile title, but the exact user phrase must remain searchable as an alias.
+- Remaining risks or follow-up ideas: Add an explicit correction flow like “исправь имя Рим Громов на ...” and maybe a confidence/confirmation field for uncertain names.
