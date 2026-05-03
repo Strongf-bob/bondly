@@ -11,6 +11,7 @@ from bondly.storage.models import (
     MessageLog,
     Person,
     PersonAlias,
+    PersonTag,
     Promise,
     PromiseStatus,
     Reminder,
@@ -42,6 +43,7 @@ class MemoryService:
                 company=extracted.company,
                 role_or_context=extracted.role_or_context,
                 facts=extracted.facts,
+                tags=extracted.tags,
             )
             people_by_name[normalize_name(extracted.name)] = person
             for alias in extracted.aliases:
@@ -101,6 +103,7 @@ class MemoryService:
         company: str | None,
         role_or_context: str | None,
         facts: list[str],
+        tags: list[str] | None = None,
     ) -> Person:
         normalized = normalize_name(name)
         person = self._session.scalar(
@@ -129,6 +132,15 @@ class MemoryService:
                     PersonAlias(user_id=user_id, person_id=person.id, alias=cleaned_alias)
                 )
                 existing_aliases.add(cleaned_alias)
+
+        existing_tags = {tag.tag for tag in person.tags}
+        for tag in tags or []:
+            cleaned_tag = normalize_name(tag).replace(" ", "-")
+            if cleaned_tag and cleaned_tag not in existing_tags:
+                self._session.add(
+                    PersonTag(user_id=user_id, person_id=person.id, tag=cleaned_tag)
+                )
+                existing_tags.add(cleaned_tag)
 
         return person
 

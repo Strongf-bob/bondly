@@ -8,6 +8,7 @@ from bondly.config import get_settings
 from bondly.llm.client import LlmClient
 from bondly.services.reminders import ReminderDispatcher
 from bondly.storage import create_session_factory, init_database
+from bondly.storage.markdown import MarkdownMemoryMirror
 
 
 async def run_bot() -> None:
@@ -22,7 +23,8 @@ async def run_bot() -> None:
         api_key=settings.llm_api_key.get_secret_value(),
         model=settings.llm_model,
     )
-    dispatcher.include_router(create_router(settings, session_factory, llm_client))
+    markdown_mirror = MarkdownMemoryMirror(settings.memory_storage_dir)
+    dispatcher.include_router(create_router(settings, session_factory, llm_client, markdown_mirror))
 
     reminders = ReminderDispatcher(
         bot=bot,

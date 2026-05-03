@@ -20,6 +20,7 @@ Version `0.1` includes:
 - Telegram polling bot via `aiogram`;
 - OpenAI-compatible chat completions integration for extraction/classification;
 - SQLite by default, configurable through `DATABASE_URL`;
+- Markdown memory mirror under `MEMORY_STORAGE_DIR`;
 - SQLAlchemy models for people, facts, promises, important dates, reminders, and message logs;
 - reminder dispatcher for due reminders;
 - basic commands and natural-language routing.
@@ -52,6 +53,7 @@ LLM_API_BASE_URL=https://your-llm-api.example/v1
 LLM_API_KEY=...
 LLM_MODEL=...
 DATABASE_URL=sqlite:///storage/bondly.sqlite3
+MEMORY_STORAGE_DIR=storage/memory
 APP_TIMEZONE=Europe/Moscow
 ```
 
@@ -60,6 +62,39 @@ The LLM API is expected to support an OpenAI-compatible endpoint:
 ```text
 POST {LLM_API_BASE_URL}/chat/completions
 ```
+
+## Storage Model
+
+Bondly uses a hybrid storage model:
+
+```text
+SQLite/Postgres = application source of truth
+Markdown        = readable memory mirror
+```
+
+The database stores operational state: open/completed promises, pending/sent/done
+reminders, person records, aliases, tags, facts, dates, and message logs. The bot
+reads from the database when answering questions and sending reminders.
+
+After memory changes, Bondly rebuilds Markdown files from the database:
+
+```text
+storage/
+  bondly.sqlite3
+
+  memory/
+    users/
+      123456789/
+        people/
+          1-саша.md
+        index/
+          people_index.json
+        tasks/
+          open_tasks.md
+```
+
+This keeps the Markdown files useful for reading, backup, and future Obsidian-style
+workflows without making reminder delivery depend on parsing `.md` files.
 
 ## Run
 

@@ -8,12 +8,14 @@ from bondly.config import Settings
 from bondly.llm.client import LlmClient, LlmError
 from bondly.services.memory import MemoryService
 from bondly.storage.database import SessionFactory
+from bondly.storage.markdown import MarkdownMemoryMirror
 
 
 def create_router(
     settings: Settings,
     session_factory: SessionFactory,
     llm_client: LlmClient,
+    markdown_mirror: MarkdownMemoryMirror,
 ) -> Router:
     router = Router()
 
@@ -44,6 +46,7 @@ def create_router(
                     reply = "Не нашёл активного напоминания, которое можно закрыть."
                 memory.log_message(user_id=user_id, chat_id=chat_id, direction="out", text=reply)
                 session.commit()
+                markdown_mirror.sync_user(session, user_id)
                 await message.answer(reply)
                 return
 
@@ -81,6 +84,8 @@ def create_router(
 
             memory.log_message(user_id=user_id, chat_id=chat_id, direction="out", text=reply)
             session.commit()
+            if intent.kind not in {"who_is", "open_promises", "due_followups"}:
+                markdown_mirror.sync_user(session, user_id)
 
         await message.answer(reply)
 
