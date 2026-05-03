@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     llm_api_key: SecretStr = Field(..., alias="LLM_API_KEY")
     llm_model: str = Field(default="default", alias="LLM_MODEL")
     database_url: str = Field(default="sqlite:///storage/bondly.sqlite3", alias="DATABASE_URL")
+    memory_storage_dir: str = Field(default="storage/memory", alias="MEMORY_STORAGE_DIR")
     app_timezone: str = Field(default="Europe/Moscow", alias="APP_TIMEZONE")
     reminder_poll_interval_seconds: int = Field(
         default=30,
