@@ -5,4 +5,4 @@ cmds = [
 ]
 
 [start]
-cmd = "python -m bondly.main"
+cmd = "PYTHONPATH=src python -m bondly.main"
