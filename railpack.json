@@ -1,25 +1,6 @@
 {
   "$schema": "https://schema.railpack.com",
-  "steps": {
-    "install": {
-      "inputs": [
-        {
-          "local": true
-        }
-      ],
-      "commands": [
-        "python -m pip install --upgrade pip",
-        "python -m pip install ."
-      ]
-    }
-  },
   "deploy": {
-    "inputs": [
-      "...",
-      {
-        "step": "install"
-      }
-    ],
     "startCommand": "PYTHONPATH=src python -m bondly.main"
   }
 }
