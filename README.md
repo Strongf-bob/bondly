@@ -1,15 +1,16 @@
-# Bondly
+<p align="center">
+  <img src="./assets/readme/hero.svg" width="100%" alt="Bondly turns Telegram messages into structured memory and timely follow-up reminders">
+</p>
 
-Bondly is a Telegram-based AI follow-up assistant. It extracts people, promises,
-important dates, and follow-up reminders from natural language messages, then
-reminds the user when action is needed.
+Bondly is a Telegram-based AI follow-up assistant. Write naturally about a
+person, promise, or important date; Bondly extracts structured memory and
+reminds you when action is due.
 
-The first MVP deliberately avoids a knowledge graph, vector database, and web
-dashboard. The product loop is:
+## The product loop
 
 1. Write a normal Telegram message about a person or promise.
-2. Let the LLM extract structured memory.
-3. Store the memory locally.
+2. Extract people, facts, promises, dates, and reminder intent.
+3. Store operational state in SQLite or PostgreSQL and rebuild a readable Markdown mirror.
 4. Send reminders when promises are due.
 5. Answer simple questions like "кто такой Саша?" and "что я обещал?".
 
@@ -24,6 +25,8 @@ Version `0.1` includes:
 - SQLAlchemy models for people, facts, promises, important dates, reminders, and message logs;
 - reminder dispatcher for due reminders;
 - basic commands and natural-language routing.
+
+The first MVP deliberately avoids:
 
 Deferred:
 
